@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Game – Millionaire Quiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-lg rounded-4 border-0 bg-gradient">
+      <div class="card-body p-4">
+
+        {% if finished %}
+          <h2 class="mb-3 text-center">🎉 Congratulations!</h2>
+          <p class="text-center">You finished all questions.</p>
+          <p class="text-center fw-bold">Your final prize: {{ prize }}</p>
+          <div class="d-grid mt-4">
+            <a href="{{ url_for('restart') }}" class="btn btn-primary">
+              Play Again
+            </a>
+          </div>
+
+        {% elif game_over %}
+          <h2 class="mb-3 text-center text-danger">💥 Game Over</h2>
+          <p class="text-center">You answered incorrectly.</p>
+          <p class="text-center fw-bold">
+            You walk away with: {{ prize }}
+          </p>
+          <div class="d-grid mt-4">
+            <a href="{{ url_for('restart') }}" class="btn btn-primary">
+              Try Again
+            </a>
+          </div>
+
+        {% else %}
+          <div class="d-flex justify-content-between mb-3 small">
+            <span>Question {{ current_index + 1 }} of {{ total_questions }}</span>
+            <span>Last guaranteed prize: {{ session.get("last_prize", "$0") }}</span>
+          </div>
+
+          <h4 class="mb-4">{{ question.question }}</h4>
+
+          {% if error %}
+            <div class="alert alert-danger py-2">{{ error }}</div>
+          {% endif %}
+
+          <form method="post">
+            <div class="list-group mb-3">
+              {% for option in question.options %}
+                <label class="list-group-item bg-dark text-light border-secondary">
+                  <input
+                    class="form-check-input me-2"
+                    type="radio"
+                    name="option"
+                    value="{{ loop.index0 }}"
+                  >
+                  {{ option }}
+                </label>
+              {% endfor %}
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-warning btn-lg">
+                Final Answer
+              </button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

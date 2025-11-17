@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome – Millionaire Quiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-lg rounded-4 border-0 bg-gradient">
+      <div class="card-body text-center p-4">
+        <h1 class="card-title mb-3">Who Wants to Be a Millionaire?</h1>
+        <p class="card-text mb-4">
+          Answer multiple-choice questions and climb the money ladder.
+          One wrong answer and you lose your winnings!
+        </p>
+        <a href="{{ url_for('start_game') }}" class="btn btn-warning btn-lg w-100">
+          Start Game
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

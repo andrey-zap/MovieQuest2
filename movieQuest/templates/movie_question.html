@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Quest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ question.poster_url }}');
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px) brightness(0.4);
+            transform: scale(1.1);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(30,30,60,0.8));
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 90%;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-header {
+            margin-bottom: 20px;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .poster-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .poster-container {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .poster-container:hover {
+            transform: scale(1.05);
+        }
+
+        .poster-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .options-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-label {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .option-label:hover {
+            transform: translateX(10px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .option-label.selected {
+            animation: glow 0.5s ease;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        input[type="radio"] {
+            margin-right: 12px;
+        }
+
+        .container.correct-answer {
+            background: rgba(76, 175, 80, 0.95) !important;
+            transition: background 0.5s ease;
+            box-shadow: 0 0 60px rgba(76, 175, 80, 0.8);
+        }
+
+        .container.wrong-answer {
+            background: rgba(244, 67, 54, 0.95) !important;
+            transition: background 0.5s ease;
+            box-shadow: 0 0 60px rgba(244, 67, 54, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .game-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <div class="player-info">
+                <span class="player-name">👤 {{ player_name }}</span>
+                <span class="score">⭐ {{ score }} pts</span>
+                <span class="question-num">❓ {{ question_number }}/10</span>
+            </div>
+        </div>
+        
+        <h1>🎬 Movie Quest</h1>
+        
+        <div class="game-content">
+            <div class="poster-section">
+                <div class="poster-container">
+                    <img src="{{ url_for('get_processed_poster', poster_id=question.poster_id) }}" alt="Movie Poster">
+                </div>
+            </div>
+
+            <div class="options-section">
+                <h2>Guess the Movie:</h2>
+                <div id="options-container">
+                    {% for option in question.options %}
+                    <label class="option-label" data-index="{{ loop.index0 }}">
+                        <input type="radio" name="option" value="{{ loop.index0 }}" style="display: none;">
+                        {{ option }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswer = {{ question.answer_index }};
+        const container = document.querySelector('.container');
+        const options = document.querySelectorAll('.option-label');
+        
+        // Create audio context for sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playCorrectSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 523.25; // C5
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+            
+            // Add a second note for harmony
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.frequency.value = 659.25; // E5
+            oscillator2.type = 'sine';
+            
+            gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator2.start(audioContext.currentTime);
+            oscillator2.stop(audioContext.currentTime + 0.5);
+        }
+        
+        function playWrongSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 200;
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.4);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+        
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Prevent multiple clicks
+                if (container.classList.contains('correct-answer') || container.classList.contains('wrong-answer')) {
+                    return;
+                }
+                
+                const selectedIndex = parseInt(this.getAttribute('data-index'));
+                
+                // Add glow effect to clicked option
+                this.classList.add('selected');
+                
+                // Check if answer is correct
+                setTimeout(() => {
+                    if (selectedIndex === correctAnswer) {
+                        container.classList.add('correct-answer');
+                        playCorrectSound();
+                    } else {
+                        container.classList.add('wrong-answer');
+                        playWrongSound();
+                    }
+                    
+                    // Wait 4 seconds then redirect to next question
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('next_question') }}?correct=" + (selectedIndex === correctAnswer);
+                    }, 1000);
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

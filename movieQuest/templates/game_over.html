@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over - Movie Quest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .results-container {
+            max-width: 600px;
+            width: 90%;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .score-display {
+            text-align: center;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-display h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .score-display .score {
+            font-size: 4em;
+            font-weight: bold;
+        }
+
+        .leaderboard {
+            margin-bottom: 30px;
+        }
+
+        .leaderboard h3 {
+            color: #34495e;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-item:nth-child(2) {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .leaderboard-item .rank {
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-right: 15px;
+        }
+
+        .leaderboard-item .name {
+            flex: 1;
+        }
+
+        .leaderboard-item .score {
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        button, .button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+        .play-again {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .play-again:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+        }
+
+        .home {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .home:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="results-container">
+        <h1>🎬 Game Over!</h1>
+        
+        <div class="score-display">
+            <h2>{{ player_name }}</h2>
+            <div class="score">{{ score }}</div>
+            <p>out of 100 points</p>
+        </div>
+
+        <div class="leaderboard">
+            <h3>🏆 Top 5 Leaderboard</h3>
+            {% for entry in leaderboard %}
+            <div class="leaderboard-item">
+                <span class="rank">#{{ loop.index }}</span>
+                <span class="name">{{ entry.name }}</span>
+                <span class="score">{{ entry.score }} pts</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="buttons">
+            <a href="{{ url_for('home') }}" class="button home">New Player</a>
+            <a href="{{ url_for('play_again') }}" class="button play-again">Play Again</a>
+        </div>
+    </div>
+</body>
+</html>
